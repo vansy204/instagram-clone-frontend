@@ -1,0 +1,22 @@
+.dropdown{
+    position: relative;
+    display: inline-block;
+
+}
+.dots{
+    display: block;
+    cursor: pointer;
+}
+.dropdown-content{
+    position: absolute;
+    z-index: 1;
+}
+
+.dropdown-content a{
+    display: block;
+    padding: 8px 16px;
+
+}
+.dropdown:hover .dots{
+    background-color: white;
+}
