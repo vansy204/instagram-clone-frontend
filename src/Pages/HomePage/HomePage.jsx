@@ -2,8 +2,8 @@ import React from "react";
 import { StoryCircle } from "../../Components/Story/StoryCircle";
 import HomeRight from "../../Components/HomeRight/HomeRight";
 import PostCard from "../../Components/Post/PostCard";
-
 export const HomePage = () => {
+
   return (
     <div>
       <div className="mt-10 flex w-[100%] justify-center">
@@ -21,6 +21,7 @@ export const HomePage = () => {
           <HomeRight />
         </div>
       </div>
+     
     </div>
   );
 };
