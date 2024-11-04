@@ -3,7 +3,7 @@ import SuggestionCard from './SuggestionCard'
 
 const HomeRight = () => {
   return (
-    <div className='border'>
+    <div className=''>
       <div>
         <div className='flex justify-between items-center'>
           <div className='flex items-center'>
