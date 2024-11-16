@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Button,
   Modal,
@@ -10,11 +11,18 @@ import { FaPhotoVideo } from "react-icons/fa";
 import "./CreatePostModal.css";
 import { GrEmoji } from "react-icons/gr";
 import { GoLocation } from "react-icons/go";
+import { useDispatch } from "react-redux";
+import { createPostAction } from "../../Redux/Post/Action";
+import { uploadToCloudnary } from "../../Config/UploadToCloudnary";
 
 const CreatePostModal = ({ onClose, isOpen }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [file, setFile] = useState();
   const [caption,setCaption] = useState("");
+  const dispatch = useDispatch();
+  const [imageUrl, setImageUrl] = useState("");
+  const [location, setLocation] = useState("");
+  const token = localStorage.getItem("token");
   const handleDragOver = (event) => {
     event.prevenDefault();
     event.dataTransfer.dropEffect = "copy";
@@ -33,12 +41,14 @@ const CreatePostModal = ({ onClose, isOpen }) => {
       setFile(droppedFile);
     }
   };
-  const handleOnChange = (e) => {
+  const handleOnChange =async (e) => {
     const file = e.target.files[0];
     if (
       file &&
       (file.type.startsWith("image/") || file.type.startsWith("video/"))
     ) {
+      const imgUrl = await uploadToCloudnary(file);
+      setImageUrl(imgUrl);
       setFile(file);
     } else {
       setFile(null);
@@ -47,6 +57,18 @@ const CreatePostModal = ({ onClose, isOpen }) => {
   };
   const handleCaptionChange = (e) =>{
     setCaption(e.target.value);
+  }
+  const handleCreatePost = () =>{
+    const data = {
+      jwt: token,
+      data: {
+        caption,
+        location,
+        image:imageUrl,
+      }
+    }
+    dispatch(createPostAction(data));
+    onClose()
   }
   return (
     <div>
@@ -60,6 +82,7 @@ const CreatePostModal = ({ onClose, isOpen }) => {
               variant={"ghost"}
               size="sm"
               colorScheme={"blue"}
+              onClick={handleCreatePost}
             >
               Share
             </Button>
@@ -118,7 +141,7 @@ const CreatePostModal = ({ onClose, isOpen }) => {
                 </div>
                 <hr />
                 <div className="p-2 flex justify-between items-center">
-                  <input className="locationInput" type="text" placeholder="location"  name="location"/>
+                  <input onChange={(e) => setLocation(e.target.value)} className="locationInput" type="text" placeholder="location"  name="location"/>
                   <GoLocation/>
                 </div>
                 <hr />
