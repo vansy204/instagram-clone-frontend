@@ -113,7 +113,7 @@ export const savePostAction = (data) => async (dispatch) => {
 };
 export const unsavePostAction = (data) => async (dispatch) => {
   try {
-    const res = await fetch(`${BASE_API}/posts/unsave_post/${data.postId}`, {
+    const res = await fetch(`${BASE_API}/posts/unSave_post/${data.postId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

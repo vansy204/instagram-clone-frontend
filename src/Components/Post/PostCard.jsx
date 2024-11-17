@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BsBookmark,
   BsBookmarkFill,
@@ -11,8 +11,10 @@ import { FaRegComment } from "react-icons/fa";
 import { RiSendPlaneLine } from "react-icons/ri";
 import CommentModal from "../Comment/CommentModal";
 import { useDisclosure } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { likePostAction, savePostAction, unlikePostAction, unsavePostAction } from "../../Redux/Post/Action";
+import { isPostLikedByUser, isSavedPost } from "../../Config/Logic";
+import {  useNavigate } from "react-router-dom";
 const PostCard = ({post}) => {
   const [showDropdown, setShowDropDown] = useState(false);
   const [isPostLiked, setIsPostLiked] = useState(false);
@@ -21,7 +23,9 @@ const PostCard = ({post}) => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const data = {jwt:token, postId: post?.id};
-
+  const { user } = useSelector((store) => store);
+  console.log("reqUser --------" , user.reqUser);
+  const navigate = useNavigate();
   const handleClick = () => {
     setShowDropDown(!showDropdown);
   };
@@ -43,8 +47,16 @@ const PostCard = ({post}) => {
     dispatch(savePostAction(data));
   };
   const handleOpenCommentModal = () => {
+    navigate(`/comment/${post.id}`);
     onOpen();
   };
+
+  useEffect(() =>{
+    setIsPostLiked(isPostLikedByUser(post,user.reqUser?.id));
+    setIsSaved(isSavedPost(user.reqUser,post.id));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[post.likedByUsers,user.reqUser]);
+
   return (
     <div>
       <div className="border rounded-md w-full">
@@ -80,7 +92,7 @@ const PostCard = ({post}) => {
         </div>
         <div className="flex justify-between items-center w-full px-5 py-4 ">
           <div className="flex items-center space-x-2">
-            {post.likedByUsers ? (
+            {isPostLiked ? (
               <AiFillHeart
                 className="text-2xl hover:opacity-50 cursor-pointer text-red-600"
                 onClick={handlePostUnlike}
