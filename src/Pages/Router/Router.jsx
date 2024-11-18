@@ -5,6 +5,7 @@ import { HomePage } from "../HomePage/HomePage";
 import Profile from "../Profile/Profile";
 import Story from "../Story/Story";
 import { Auth } from "../Auth/Auth";
+import EditAccountDetail from "../../Components/EditAccount/EditAccountDetail";
 
 export const Router = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ export const Router = () => {
               <Route path="/username" element={<Profile />}></Route>
               <Route path="/story" element={<Story />}></Route>
               <Route path="/comment/:postId" element={<HomePage />}></Route>
+              <Route path="/account/edit" element={<EditAccountDetail />}></Route>
             </Routes>
           </div>
         </div>

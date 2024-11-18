@@ -15,7 +15,7 @@ export const createCommentAction = (data) => async (dispatch) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + data.jwt,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data.data),
     });
     const comment = await res.json();
     console.log("created comment: ", comment);

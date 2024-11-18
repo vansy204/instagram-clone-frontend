@@ -24,7 +24,7 @@ const PostCard = ({post}) => {
   const token = localStorage.getItem("token");
   const data = {jwt:token, postId: post?.id};
   const { user } = useSelector((store) => store);
-  console.log("reqUser --------" , user.reqUser);
+  //console.log("reqUser --------" , user.reqUser);
   const navigate = useNavigate();
   const handleClick = () => {
     setShowDropDown(!showDropdown);
@@ -64,12 +64,12 @@ const PostCard = ({post}) => {
           <div className="flex items-center ">
             <img
               className="h-12 w-12 rounded-full"
-              src="https://cdn.pixabay.com/photo/2024/02/05/10/48/bird-8554204_640.jpg"
+              src= {post.user.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
               alt=""
             />
             <div className="pl-2">
-              <p className="font-semibold text-sm items-center">username</p>
-              <p className="font-thin text-sm">localtion</p>
+              <p className="font-semibold text-sm items-center">{post?.user.username}</p>
+              <p className="font-thin text-sm">{post.location}</p>
             </div>
           </div>
           <div className="dropdown">

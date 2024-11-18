@@ -1,5 +1,5 @@
 import { Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BsBookmark,
   BsBookmarkFill,
@@ -11,9 +11,13 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import { RiSendPlaneLine } from "react-icons/ri";
 import "./CommentModal.css";
-import { useDispatch } from "react-redux";
-import { createCommentAction } from "../../Redux/Comment/Action";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createCommentAction,
+} from "../../Redux/Comment/Action";
 import { useParams } from "react-router-dom";
+import { findPostByIdAction } from "../../Redux/Post/Action";
+import { timeDifference } from "../../Config/Logic";
 const CommentModal = ({
   onClose,
   isOpen,
@@ -26,6 +30,19 @@ const CommentModal = ({
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const { postId } = useParams();
+  const { comment, post, user } = useSelector((store) => store);
+  
+  useEffect(() => {
+    const data = {
+      jwt: token,
+      postId,
+    };
+    if(postId){
+      dispatch(findPostByIdAction(data));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comment.createdComment,postId]);
+
   return (
     <div>
       <Modal size={"4xl"} onClose={onClose} isOpen={isOpen} isCentered>
@@ -36,7 +53,7 @@ const CommentModal = ({
               <div className="w-[45%] flex flex-col justify-center">
                 <img
                   className="max-h-full w-full"
-                  src="https://cdn.pixabay.com/photo/2023/11/02/05/23/woman-8359670_640.png"
+                  src={post.singlePost?.image}
                   alt=""
                 />
               </div>
@@ -46,20 +63,20 @@ const CommentModal = ({
                     <div>
                       <img
                         className="w-9 h-9 rounded-full"
-                        src="https://cdn.pixabay.com/photo/2024/09/18/13/41/iceland-9056229_640.jpg"
+                        src={user.reqUser.image || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
                         alt=""
                       />
                     </div>
                     <div className="ml-2">
-                      <p>username</p>
+                      <p>{user.reqUser.username}</p>
                     </div>
                   </div>
                   <BsThreeDots />
                 </div>
                 <hr />
                 <div className="comment">
-                  {[1, 1, 1, 1, 1, 1, 1].map((item) => (
-                    <CommentCard />
+                  {post.singlePost?.comments.map((item) => (
+                    <CommentCard comment={item} />
                   ))}
                 </div>
                 <div className="absolute bottom-0 w-[90%]">
@@ -94,8 +111,8 @@ const CommentModal = ({
                     </div>
                   </div>
                   <div className="w-full py-2">
-                    <p>10 likes</p>
-                    <p className="opacity-50 text-sm">1 day ago</p>
+                   {post.singlePost?.likedByUsers?.length > 0 && <p>{post.singlePost?.likedByUsers?.length} likes</p>}
+                    <p className="opacity-50 text-sm">{timeDifference(post.singlePost?.createdAt)}</p>
                   </div>
 
                   <div className="flex items-center w-full ">
@@ -105,14 +122,19 @@ const CommentModal = ({
                       type="text"
                       placeholder="Add a comment..."
                       onChange={(e) => setCommentContent(e.target.value)}
+                      value={commentContent}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           const data = {
                             postId,
                             jwt: token,
-                            content: commentContent,
+
+                            data: {
+                              content: commentContent,
+                            },
                           };
                           dispatch(createCommentAction(data));
+                          setCommentContent("");
                         }
                       }}
                     />
